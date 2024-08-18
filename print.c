@@ -1,14 +1,16 @@
-#include <stdio.h>
-#include <string.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int print(char arr[], ...);
+int toStr(int n, char **narr);
 
 int main()
 {
-    int t = 'g';
+    char t = 'g';
 
-    print("Hello #i #d #c #d", 1, 14, t, 2);
+    print("Hello #i #d #c #d", 1, 1454, t, 2);
 }
 
 int print(char arr[], ...)
@@ -25,12 +27,11 @@ int print(char arr[], ...)
         i++;
     }
 
-    char buff[i];
+    int j = 1;
+    char *buff = (char *)malloc(j);
 
     va_list args;
     va_start(args, arr);
-
-    int j = 0;
 
     for (i = 0; arr[i] != '\0'; i++)
     {
@@ -39,24 +40,34 @@ int print(char arr[], ...)
             if (arr[i + 1] == 'i' || arr[i + 1] == 'd')
             {
                 int val = (int)va_arg(args, int);
-                
-                sprintf(buff + j, "%d", val);
-                j++;
+                char *temp = NULL;
+                int size = toStr(val, &temp);
+
+                int k = size - 1;
+                while (k >= 0)
+                {
+                    buff[j - 1] = temp[k];
+                    j++;
+                    buff = (char *)realloc(buff, j);
+                    k--;
+                }
                 i++;
             }
 
             else if (arr[i + 1] == 'c')
             {
-                buff[j] = (char)va_arg(args, int);
+                buff[j - 1] = (char)va_arg(args, int);
                 j++;
+                buff = (char *)realloc(buff, j);
                 i++;
             }
         }
 
         else
         {
-            buff[j] = arr[i];
+            buff[j - 1] = arr[i];
             j++;
+            buff = (char *)realloc(buff, j);
         }
     }
 
@@ -65,6 +76,38 @@ int print(char arr[], ...)
     va_end(args);
 
     printf("%s",buff);
+    int len = strlen(buff);
 
-    return strlen(buff);
+    free(buff);
+
+    return len;
+}
+
+int toStr(int n, char **narr)
+{
+    int size = 1;
+    *narr = malloc(size);
+    if (*narr == NULL) {
+        return 0;
+    }
+  
+    (*narr)[size - 1] = ((n % 10) + 48);
+    n = n/10;
+
+    while(n > 0)
+    {
+        size++;
+
+        char *temp = (char *)realloc(*narr, size);
+        if (temp == NULL) {
+            free(*narr);
+            return 0;
+        }
+        *narr = temp;
+
+        (*narr)[size - 1] = ((n % 10) + 48);
+        n = n/10;
+    }
+
+    return size;
 }
