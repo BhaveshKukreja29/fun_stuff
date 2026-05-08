@@ -27,7 +27,12 @@ def diff(f, x):
     return f(Dual(x, 1)).dual
 
 def f(x):
-    return x * x + 2 * x
+    y = x
+
+    for _ in range(3):
+        y = y * y + x
+
+    return y
 
 x = int(input("Enter x: "))
 print(f"Value of f({x}): {f(x)}")
