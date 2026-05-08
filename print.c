@@ -75,7 +75,7 @@ int print(char arr[], ...)
 
     va_end(args);
 
-    printf("%s",buff);
+    puts(buff);
     int len = strlen(buff);
 
     free(buff);
