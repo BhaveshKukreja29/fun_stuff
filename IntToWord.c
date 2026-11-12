@@ -1,88 +1,75 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int* convert_int_to_array(int, int);
+
 int main()
 {
-    //collection of number we will use
-    char *arr[3][10] = {
-        {"", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"},
-        {"","", "Twenty ", "Thirty ", "Fourty ", "Fifty ", "Sixty ", "Seventy ", "Eighty ", "Ninety "},
-        {"", "One Hundred ", "Two Hundred ", "Three Hundred ", "Four Hundred ", "Five Hundred ", "Six  Hundred ", "Seven Hundred ", "Eight Hundred ", "Nine Hundred "},
-    };
+  char* word_arr[][10] = {
+    {"", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"},
+    {"", "Ten", "Twenty", "Thirty", "Fourty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"},
+    {"", "One Hundred", "Two Hundred", "Three Hundred", "Four Hundred", "Five Hundred", "Six Hundred", "Seven Hundred", "Eight Hundred", "Nine Hundred"},
+    {"Thousand", "One Thousand", "Two Thousand", "Three Thousand", "Four Thousand", "Five Thousand", "Six Thousand", "Seven Thousand", "Eight Thousand", "Nine Thousand"},
+    {"", "Ten", "Twenty", "Thirty", "Fourty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"}
+  };
 
-    //some numbers which we can't just show by concatenation
-    char *edge[10] = {"Ten","Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
+  char* edge[] = {"", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
 
-    int n;
-    printf("Enter the decimal number: ");
-    scanf("%d", &n);
-
-
-    //making some memory to store the digits of the integer
-    int size = 1;
-    int *narr = malloc(size * sizeof(int));;
+  int stored;
+  printf("Enter number: ");
+  scanf("%d", &stored);
   
-    narr[size - 1] = n % 10;
-    n = n/10;
+  // if even len, we won't use edge case array
+  // if odd, we will
 
-    //storing each digit in the array and also increasing the size of array accordingly
-    while(n > 0)
-    {
-        size++;
+  int count = 1;
+  int temp = 1;
+  while (temp <= stored && temp * 10 <= stored) {
+    temp *= 10;
+    count += 1;
+  }
 
-        narr = (int*)realloc(narr, size * sizeof(int));
 
-        narr[size - 1] = n % 10;
-        n = n/10;
-    }
-
-    printf("In words: ");
-
-    for (int i = size - 1; i >= 0; i--)
-    {
-        if (size < 4)
-        {
-            if (size == 1 && narr[i] == 0)
-            {
-                printf("Zero");
-            }
-
-            else if (size == 1 && narr[i] > 0)
-            {
-                printf("%s", arr[i][narr[i]]);
-            }
-
-            
-            //need break here since we only need one iteration to print the answer
-            else if (size == 2 && narr[size - 1] == 1)
-            {
-                printf("%s", edge[narr[i - 1]]);
-                break;
-            }
-
-            //substituting the index value to access the appropriate multiple
-            //and then passing narr[i] to access the actual index for the number
-            else if (size == 2 && narr[size - 1] > 1)
-            {
-                printf("%s", arr[i][narr[i]]);
-            }
-
-            else if (size == 3)
-            {
-                printf("%s", arr[i][narr[i]]);
-                
-                if (i == 2) printf("and ");
-            }
-        }
-
-        else
-        {
-            printf("Too large number for this program to handle.");
-            break;
-        }
-    }
-
-    free(narr);
-
+  printf("%d\n\n", count);
+  if (count > 5) {
+    printf("Too large, try smaller");
     return 0;
+  }
+  
+  int start_idx = count - 1;
+    
+  int* temp_in_words = convert_int_to_array(stored, count);
+  
+  for (int i = 0; i < count; i++) {
+    if (i == count - 2 && temp_in_words[count - 2] == 1 && temp_in_words[count - 1] != 0) {
+      printf("%s ", edge[temp_in_words[i + 1]]);
+      i += 1;
+    }
+    else{
+      printf("%s ", word_arr[start_idx][temp_in_words[i]]);
+    }
+    if (start_idx == 2 && (temp_in_words[i + 1] != 0 || temp_in_words[i + 2] != 0)) {
+      printf("and ");
+    }
+    start_idx--;
+  }
+  printf("\n");
+
+  return 0;
 }
+
+int* convert_int_to_array(int temp, int count) {
+  int* temp_storage = malloc(count * sizeof(int));
+  int value;
+
+  for (int i = count - 1; i >= 0; i--){
+    value = temp % 10;
+    temp = temp / 10;
+    temp_storage[i] = value;
+  }
+
+  return temp_storage;
+}
+
+
+
